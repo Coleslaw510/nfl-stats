@@ -4,6 +4,10 @@
     ypg:  { label: "Yards per game",           head: "Yds/G",       opp: "yapg", oppLabel: "Opp yds allowed rank", legend: "Opponent defense (yards allowed rank)",  fmt: 1 },
     papg: { label: "Points allowed per game",  head: "Pts allowed/G", opp: "ppg", oppLabel: "Opp points/G rank",  legend: "Opponent offense (points per game rank)", fmt: 1 },
     yapg: { label: "Yards allowed per game",   head: "Yds allowed/G", opp: "ypg", oppLabel: "Opp yards/G rank",   legend: "Opponent offense (yards per game rank)",  fmt: 1 },
+    rypg:  { label: "Rushing yards per game",          head: "Rush Yds/G",       opp: "ryapg", oppLabel: "Opp rush allowed rank", legend: "Opponent rush defense (rush yards allowed rank)", fmt: 1 },
+    pypg:  { label: "Passing yards per game",          head: "Pass Yds/G",       opp: "pyapg", oppLabel: "Opp pass allowed rank", legend: "Opponent pass defense (pass yards allowed rank)", fmt: 1 },
+    ryapg: { label: "Rushing yards allowed per game",  head: "Rush allowed/G",   opp: "rypg",  oppLabel: "Opp rush Yds/G rank",  legend: "Opponent rush offense (rush yards per game rank)", fmt: 1 },
+    pyapg: { label: "Passing yards allowed per game",  head: "Pass allowed/G",   opp: "pypg",  oppLabel: "Opp pass Yds/G rank",  legend: "Opponent pass offense (pass yards per game rank)", fmt: 1 },
     // ESPN win rates (whole percents, ESPN's published ranks; higher = better)
     pbwr: { label: "Pass block win rate", head: "PBWR", opp: "prwr", oppLabel: "Opp pass rush WR rank", legend: "Opponent pass rush (PRWR rank)",   pct: true, wr: "Pass block win rate: how often a team’s linemen sustain their pass blocks for 2.5+ seconds." },
     rbwr: { label: "Run block win rate",  head: "RBWR", opp: "rswr", oppLabel: "Opp run stop WR rank",  legend: "Opponent run defense (RSWR rank)", pct: true, wr: "Run block win rate: share of run-block matchups won by a team’s blockers." },

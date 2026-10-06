@@ -18,6 +18,10 @@
     <button role="tab" data-tab="ypg"><span class="grp">Offense</span>Yards / game</button>
     <button role="tab" data-tab="papg"><span class="grp">Defense</span>Points allowed / game</button>
     <button role="tab" data-tab="yapg"><span class="grp">Defense</span>Yards allowed / game</button>
+    <button role="tab" data-tab="rypg"><span class="grp">Offense</span>Rush yards / game</button>
+    <button role="tab" data-tab="pypg"><span class="grp">Offense</span>Pass yards / game</button>
+    <button role="tab" data-tab="ryapg"><span class="grp">Defense</span>Rush yards allowed / game</button>
+    <button role="tab" data-tab="pyapg"><span class="grp">Defense</span>Pass yards allowed / game</button>
     <button role="tab" data-tab="pbwr"><span class="grp">O-line</span>Pass block win rate</button>
     <button role="tab" data-tab="rbwr"><span class="grp">O-line</span>Run block win rate</button>
     <button role="tab" data-tab="prwr"><span class="grp">D-line</span>Pass rush win rate</button>
@@ -37,7 +41,7 @@
   <ol id="list" class="list"></ol>
 
   <footer class="small muted">
-    <p>Source: ESPN public data (game box scores), cross-checked against ESPN team stats and nflverse. Rank 1 = best. Yards = total net yards. Win rates (PBWR, RBWR, PRWR, RSWR) are <a href="https://www.espn.com/analytics/">ESPN Analytics</a> metrics built on NFL Next Gen Stats tracking data, shown as published by ESPN with ESPN’s ranks (they update on their own schedule, so they can lag the game stats by a week). Tap a team to see its schedule; opponent badges show that opponent’s current season-to-date rank in the opposite stat (red = tougher, green = easier).</p>
+    <p>Source: ESPN public data (game box scores), cross-checked against ESPN team stats and nflverse. Rank 1 = best. Yards = total net yards; rush yards and pass yards (net of sacks) are the box-score split of that total. Win rates (PBWR, RBWR, PRWR, RSWR) are <a href="https://www.espn.com/analytics/">ESPN Analytics</a> metrics built on NFL Next Gen Stats tracking data, shown as published by ESPN with ESPN’s ranks (they update on their own schedule, so they can lag the game stats by a week). Tap a team to see its schedule; opponent badges show that opponent’s current season-to-date rank in the opposite stat (red = tougher, green = easier).</p>
   </footer>
 </main>
 <script src="app.js"></script>

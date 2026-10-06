@@ -10,12 +10,14 @@ Method
 * Teams:     site.api.espn.com/apis/site/v2/sports/football/nfl/teams
 * Schedules: site.api.espn.com/.../teams/{id}/schedule?season=YYYY&seasontype=2
 * Box scores for every FINAL game: site.api.espn.com/.../summary?event={id}
-  -> points (final score) and total net yards (box-score "totalYards") for
+  -> points (final score), total net yards (box-score "totalYards"), rushing
+     yards ("rushingYards"), and net passing yards ("netPassingYards") for
      both teams, so offense AND defense (allowed) numbers come from the same
-     game-level data.
+     game-level data. totalYards = netPassingYards + rushingYards.
 * Cross-check: sports.core.api.espn.com team season statistics
-  (totalPointsPerGame, netYardsPerGame) are compared with our computed
-  offense numbers; mismatches are reported (stored in data.json too).
+  (totalPointsPerGame, netYardsPerGame, rushingYardsPerGame,
+  netPassingYardsPerGame) are compared with our computed offense numbers;
+  mismatches are reported (stored in data.json too).
 Only games with status FINAL are counted. In-progress / scheduled games are
 shown on schedules without affecting stats.
 
@@ -287,14 +289,20 @@ def main():
     # ---- box scores for finals -----------------------------------------------
     def fetch_box(eid):
         sj = get_json(f"{SITE}/summary?event={eid}")
-        yards = {}
+        yards = {}  # tid -> {total, rush, pass}
+        want = {"totalYards": "total", "rushingYards": "rush", "netPassingYards": "pass"}
         for bt in sj.get("boxscore", {}).get("teams", []):
+            tid = bt["team"]["id"]
+            got = {}
             for s in bt.get("statistics", []):
-                if s.get("name") == "totalYards":
-                    try:
-                        yards[bt["team"]["id"]] = int(str(s["displayValue"]).replace(",", ""))
-                    except ValueError:
-                        pass
+                key = want.get(s.get("name"))
+                if key is None:
+                    continue
+                try:
+                    got[key] = int(str(s["displayValue"]).replace(",", ""))
+                except ValueError:
+                    pass
+            yards[tid] = got
         # final scores from header too (authoritative for the game)
         for comp in sj.get("header", {}).get("competitions", [{}])[0].get("competitors", []):
             sc = score_of(comp)
@@ -306,13 +314,26 @@ def main():
     with ThreadPoolExecutor(8) as ex:
         for eid, yards in ex.map(fetch_box, final_ids):
             for tid in events[eid]["teams"]:
-                y = yards.get(tid)
-                events[eid]["teams"][tid]["yards"] = y
-                if y is None:
-                    gaps.append(f"Missing total yards for team {teams.get(tid, {}).get('abbr', tid)} in event {eid}")
+                got = yards.get(tid) or {}
+                events[eid]["teams"][tid]["yards"] = got.get("total")
+                events[eid]["teams"][tid]["rush_yards"] = got.get("rush")
+                events[eid]["teams"][tid]["pass_yards"] = got.get("pass")
+                ab = teams.get(tid, {}).get("abbr", tid)
+                for label, key in (("total yards", "total"), ("rushing yards", "rush"), ("net passing yards", "pass")):
+                    if got.get(key) is None:
+                        gaps.append(f"Missing {label} for team {ab} in event {eid}")
+                # total should equal rush + net pass when all present
+                if all(k in got for k in ("total", "rush", "pass")) and got["total"] != got["rush"] + got["pass"]:
+                    gaps.append(
+                        f"Yards split mismatch for {ab} in event {eid}: "
+                        f"total={got['total']} rush={got['rush']} pass={got['pass']}"
+                    )
 
     # ---- aggregate ---------------------------------------------------------------
-    agg = {tid: {"gp": 0, "pf": 0, "pa": 0, "yf": 0, "ya": 0, "ygp": 0} for tid in teams}
+    agg = {tid: {"gp": 0, "pf": 0, "pa": 0,
+                 "yf": 0, "ya": 0, "ygp": 0,
+                 "ryf": 0, "rya": 0, "pyf": 0, "pya": 0, "rygp": 0, "pygp": 0}
+           for tid in teams}
     for eid in final_ids:
         g = events[eid]
         tids = list(g["teams"])
@@ -329,20 +350,36 @@ def main():
                 a["ygp"] += 1
                 a["yf"] += m["yards"]
                 a["ya"] += o["yards"]
+            if m.get("rush_yards") is not None and o.get("rush_yards") is not None:
+                a["rygp"] += 1
+                a["ryf"] += m["rush_yards"]
+                a["rya"] += o["rush_yards"]
+            if m.get("pass_yards") is not None and o.get("pass_yards") is not None:
+                a["pygp"] += 1
+                a["pyf"] += m["pass_yards"]
+                a["pya"] += o["pass_yards"]
 
     def per(n, d):
         return round(n / d, 2) if d else None
 
     stats = {}
     for tid, a in agg.items():
-        stats[tid] = {"gp": a["gp"], "pf": a["pf"], "pa": a["pa"], "yf": a["yf"], "ya": a["ya"],
+        stats[tid] = {"gp": a["gp"], "pf": a["pf"], "pa": a["pa"],
+                      "yf": a["yf"], "ya": a["ya"],
+                      "ryf": a["ryf"], "rya": a["rya"], "pyf": a["pyf"], "pya": a["pya"],
                       "ppg": per(a["pf"], a["gp"]), "ypg": per(a["yf"], a["ygp"]),
-                      "papg": per(a["pa"], a["gp"]), "yapg": per(a["ya"], a["ygp"])}
+                      "papg": per(a["pa"], a["gp"]), "yapg": per(a["ya"], a["ygp"]),
+                      "rypg": per(a["ryf"], a["rygp"]), "ryapg": per(a["rya"], a["rygp"]),
+                      "pypg": per(a["pyf"], a["pygp"]), "pyapg": per(a["pya"], a["pygp"])}
     ranks = {
         "ppg": rank({t: s["ppg"] for t, s in stats.items()}, True),
         "ypg": rank({t: s["ypg"] for t, s in stats.items()}, True),
         "papg": rank({t: s["papg"] for t, s in stats.items()}, False),
         "yapg": rank({t: s["yapg"] for t, s in stats.items()}, False),
+        "rypg": rank({t: s["rypg"] for t, s in stats.items()}, True),
+        "pypg": rank({t: s["pypg"] for t, s in stats.items()}, True),
+        "ryapg": rank({t: s["ryapg"] for t, s in stats.items()}, False),
+        "pyapg": rank({t: s["pyapg"] for t, s in stats.items()}, False),
     }
 
     # ---- cross-check vs ESPN core team stats ----------------------------------
@@ -356,7 +393,9 @@ def main():
             for s in cat.get("stats", []):
                 vals.setdefault(s["name"], s.get("value"))
         return tid, {"gp": vals.get("gamesPlayed"), "ppg": vals.get("totalPointsPerGame"),
-                     "ypg": vals.get("netYardsPerGame")}
+                     "ypg": vals.get("netYardsPerGame"),
+                     "rypg": vals.get("rushingYardsPerGame"),
+                     "pypg": vals.get("netPassingYardsPerGame")}
 
     with ThreadPoolExecutor(8) as ex:
         core = dict(ex.map(fetch_core, teams))
@@ -371,7 +410,7 @@ def main():
             mismatches.append(f"{ab}: games played differ (box {s['gp']} vs core {int(c['gp'])}) - not compared")
             continue
         checked += 1
-        for k in ("ppg", "ypg"):
+        for k in ("ppg", "ypg", "rypg", "pypg"):
             if c.get(k) is not None and s[k] is not None and abs(c[k] - s[k]) > 0.05:
                 mismatches.append(f"{ab}: {k} box={s[k]} core={round(c[k], 2)}")
     print(f"Cross-check vs ESPN core team stats: {checked} teams compared, {len(mismatches)} notes")
@@ -409,6 +448,8 @@ def main():
                 pf, pa = row["pf"], row["pa"]
                 row["result"] = "W" if pf > pa else "L" if pf < pa else "T"
                 row["yf"], row["ya"] = me.get("yards"), op.get("yards")
+                row["ryf"], row["rya"] = me.get("rush_yards"), op.get("rush_yards")
+                row["pyf"], row["pya"] = me.get("pass_yards"), op.get("pass_yards")
             games.append(row)
         # Derive bye week(s) from gaps in the week sequence (ESPN's byeWeek field
         # has been seen to be wrong); fall back to byeWeek if no gap is found.
@@ -442,6 +483,7 @@ def main():
         "source": "ESPN public JSON APIs (team schedules + game box scores); cross-checked vs ESPN team season statistics",
         "notes": [
             "Yards = box-score total net yards (passing net of sacks + rushing), the standard NFL definition.",
+            "Rushing yards = box-score rushingYards; passing yards = box-score netPassingYards (net of sacks).",
             "Only final games are counted; per-game values use games played.",
         ],
         "data_gaps": gaps,
@@ -454,7 +496,9 @@ def main():
         json.dump(data, f, indent=1)
     os.replace(tmp, args.out)
     print(f"Wrote {args.out}: through week {last_week}, pending {pending_in_last}, gaps={len(gaps)}")
-    for k, label in (("ppg", "PPG"), ("ypg", "YPG"), ("papg", "Pts allowed/G"), ("yapg", "Yds allowed/G")):
+    for k, label in (("ppg", "PPG"), ("ypg", "YPG"), ("papg", "Pts allowed/G"), ("yapg", "Yds allowed/G"),
+                     ("rypg", "Rush YPG"), ("pypg", "Pass YPG"),
+                     ("ryapg", "Rush allowed/G"), ("pyapg", "Pass allowed/G")):
         top = sorted(out_teams, key=lambda t: t["rank"][k] or 99)[:3]
         print(f"  Top 3 {label}: " + ", ".join(f"{t['abbr']} {t[k]}" for t in top))
     for k in WR_METRICS:
