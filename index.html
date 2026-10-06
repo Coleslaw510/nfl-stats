@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NFL Team Stats</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>NFL Team Stats <span id="season" class="muted"></span></h1>
+    <p id="asof" class="muted small">Loading…</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Stat">
+    <button role="tab" data-tab="ppg"><span class="grp">Offense</span>Points / game</button>
+    <button role="tab" data-tab="ypg"><span class="grp">Offense</span>Yards / game</button>
+    <button role="tab" data-tab="papg"><span class="grp">Defense</span>Points allowed / game</button>
+    <button role="tab" data-tab="yapg"><span class="grp">Defense</span>Yards allowed / game</button>
+  </nav>
+
+  <div class="legend small">
+    <span id="legend-label" class="muted"></span>
+    <span class="scale"><span>Tougher</span><i class="bar"></i><span>Easier</span></span>
+  </div>
+
+  <div class="list-head small muted">
+    <span class="c-rank">#</span><span class="c-team">Team</span><span id="value-head" class="c-val"></span>
+  </div>
+  <ol id="list" class="list"></ol>
+
+  <footer class="small muted">
+    <p>Source: ESPN public data (game box scores), cross-checked against ESPN team stats and nflverse. Rank 1 = best. Yards = total net yards. Tap a team to see its schedule; opponent badges show that opponent’s current season-to-date rank in the opposite stat (red = tougher, green = easier).</p>
+  </footer>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
