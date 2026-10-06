@@ -16,6 +16,17 @@
   "teams_compared": 32,
   "notes": []
  },
+ "win_rates": {
+  "status": "ok",
+  "source": "ESPN Analytics win rates (powered by NFL Next Gen Stats player tracking)",
+  "url": "https://www.espn.com/nfl/story/_/id/49742016/2026-win-rates-team-player-rankings-pass-rush-run-stop-blocking",
+  "headline": "2026 NFL pass rush, run stop, blocking win rate rankings",
+  "updated_text": "Through Week 3 games, Sept. 29 at 10 a.m. ET",
+  "through_week": 3,
+  "page_modified_utc": "2026-09-29T14:10:00Z",
+  "fetched_utc": "2026-10-06T01:15:12Z",
+  "error": null
+ },
  "teams": [
   {
    "id": "22",
@@ -33,11 +44,19 @@
    "ypg": 294.75,
    "papg": 29.25,
    "yapg": 351.25,
+   "pbwr": 32,
+   "rbwr": 72,
+   "prwr": 57,
+   "rswr": 28,
    "rank": {
     "ppg": 16,
     "ypg": 22,
     "papg": 30,
-    "yapg": 25
+    "yapg": 25,
+    "pbwr": 31,
+    "rbwr": 24,
+    "prwr": 4,
+    "rswr": 24
    },
    "schedule": [
     {
@@ -252,11 +271,19 @@
    "ypg": 340.67,
    "papg": 22.67,
    "yapg": 310.67,
+   "pbwr": 53,
+   "rbwr": 74,
+   "prwr": 61,
+   "rswr": 32,
    "rank": {
     "ppg": 28,
     "ypg": 15,
     "papg": 15,
-    "yapg": 8
+    "yapg": 8,
+    "pbwr": 11,
+    "rbwr": 9,
+    "prwr": 3,
+    "rswr": 6
    },
    "schedule": [
     {
@@ -466,11 +493,19 @@
    "ypg": 395.0,
    "papg": 24.0,
    "yapg": 315.25,
+   "pbwr": 41,
+   "rbwr": 77,
+   "prwr": 55,
+   "rswr": 28,
    "rank": {
     "ppg": 7,
     "ypg": 5,
     "papg": 19,
-    "yapg": 10
+    "yapg": 10,
+    "pbwr": 29,
+    "rbwr": 3,
+    "prwr": 7,
+    "rswr": 20
    },
    "schedule": [
     {
@@ -685,11 +720,19 @@
    "ypg": 386.25,
    "papg": 26.75,
    "yapg": 372.25,
+   "pbwr": 62,
+   "rbwr": 78,
+   "prwr": 49,
+   "rswr": 31,
    "rank": {
     "ppg": 1,
     "ypg": 8,
     "papg": 25,
-    "yapg": 27
+    "yapg": 27,
+    "pbwr": 1,
+    "rbwr": 2,
+    "prwr": 21,
+    "rswr": 11
    },
    "schedule": [
     {
@@ -904,11 +947,19 @@
    "ypg": 405.75,
    "papg": 27.25,
    "yapg": 387.25,
+   "pbwr": 47,
+   "rbwr": 71,
+   "prwr": 53,
+   "rswr": 28,
    "rank": {
     "ppg": 4,
     "ypg": 4,
     "papg": 26,
-    "yapg": 29
+    "yapg": 29,
+    "pbwr": 25,
+    "rbwr": 28,
+    "prwr": 14,
+    "rswr": 21
    },
    "schedule": [
     {
@@ -1123,11 +1174,19 @@
    "ypg": 429.0,
    "papg": 16.25,
    "yapg": 282.25,
+   "pbwr": 49,
+   "rbwr": 70,
+   "prwr": 55,
+   "rswr": 23,
    "rank": {
     "ppg": 9,
     "ypg": 1,
     "papg": 4,
-    "yapg": 3
+    "yapg": 3,
+    "pbwr": 19,
+    "rbwr": 30,
+    "prwr": 8,
+    "rswr": 32
    },
    "schedule": [
     {
@@ -1342,11 +1401,19 @@
    "ypg": 351.75,
    "papg": 21.25,
    "yapg": 347.5,
+   "pbwr": 50,
+   "rbwr": 78,
+   "prwr": 49,
+   "rswr": 30,
    "rank": {
     "ppg": 14,
     "ypg": 10,
     "papg": 13,
-    "yapg": 23
+    "yapg": 23,
+    "pbwr": 16,
+    "rbwr": 1,
+    "prwr": 19,
+    "rswr": 14
    },
    "schedule": [
     {
@@ -1561,11 +1628,19 @@
    "ypg": 292.5,
    "papg": 23.75,
    "yapg": 348.5,
+   "pbwr": 54,
+   "rbwr": 71,
+   "prwr": 50,
+   "rswr": 32,
    "rank": {
     "ppg": 21,
     "ypg": 23,
     "papg": 18,
-    "yapg": 24
+    "yapg": 24,
+    "pbwr": 7,
+    "rbwr": 27,
+    "prwr": 17,
+    "rswr": 7
    },
    "schedule": [
     {
@@ -1780,11 +1855,19 @@
    "ypg": 347.5,
    "papg": 28.0,
    "yapg": 389.5,
+   "pbwr": 50,
+   "rbwr": 67,
+   "prwr": 40,
+   "rswr": 30,
    "rank": {
     "ppg": 2,
     "ypg": 11,
     "papg": 29,
-    "yapg": 30
+    "yapg": 30,
+    "pbwr": 16,
+    "rbwr": 31,
+    "prwr": 31,
+    "rswr": 12
    },
    "schedule": [
     {
@@ -1999,11 +2082,19 @@
    "ypg": 280.25,
    "papg": 23.5,
    "yapg": 375.0,
+   "pbwr": 48,
+   "rbwr": 75,
+   "prwr": 55,
+   "rswr": 30,
    "rank": {
     "ppg": 26,
     "ypg": 27,
     "papg": 17,
-    "yapg": 28
+    "yapg": 28,
+    "pbwr": 21,
+    "rbwr": 8,
+    "prwr": 6,
+    "rswr": 13
    },
    "schedule": [
     {
@@ -2218,11 +2309,19 @@
    "ypg": 389.25,
    "papg": 31.75,
    "yapg": 423.75,
+   "pbwr": 60,
+   "rbwr": 72,
+   "prwr": 53,
+   "rswr": 26,
    "rank": {
     "ppg": 5,
     "ypg": 6,
     "papg": 32,
-    "yapg": 32
+    "yapg": 32,
+    "pbwr": 2,
+    "rbwr": 21,
+    "prwr": 11,
+    "rswr": 26
    },
    "schedule": [
     {
@@ -2437,11 +2536,19 @@
    "ypg": 307.25,
    "papg": 26.25,
    "yapg": 324.25,
+   "pbwr": 16,
+   "rbwr": 73,
+   "prwr": 49,
+   "rswr": 26,
    "rank": {
     "ppg": 27,
     "ypg": 20,
     "papg": 23,
-    "yapg": 14
+    "yapg": 14,
+    "pbwr": 32,
+    "rbwr": 19,
+    "prwr": 20,
+    "rswr": 28
    },
    "schedule": [
     {
@@ -2656,11 +2763,19 @@
    "ypg": 343.75,
    "papg": 27.25,
    "yapg": 343.75,
+   "pbwr": 55,
+   "rbwr": 72,
+   "prwr": 42,
+   "rswr": 31,
    "rank": {
     "ppg": 19,
     "ypg": 13,
     "papg": 26,
-    "yapg": 21
+    "yapg": 21,
+    "pbwr": 6,
+    "rbwr": 23,
+    "prwr": 30,
+    "rswr": 10
    },
    "schedule": [
     {
@@ -2875,11 +2990,19 @@
    "ypg": 284.25,
    "papg": 26.0,
    "yapg": 392.25,
+   "pbwr": 51,
+   "rbwr": 72,
+   "prwr": 42,
+   "rswr": 24,
    "rank": {
     "ppg": 13,
     "ypg": 25,
     "papg": 22,
-    "yapg": 31
+    "yapg": 31,
+    "pbwr": 12,
+    "rbwr": 25,
+    "prwr": 29,
+    "rswr": 31
    },
    "schedule": [
     {
@@ -3094,11 +3217,19 @@
    "ypg": 316.5,
    "papg": 13.25,
    "yapg": 354.5,
+   "pbwr": 40,
+   "rbwr": 76,
+   "prwr": 45,
+   "rswr": 26,
    "rank": {
     "ppg": 12,
     "ypg": 18,
     "papg": 2,
-    "yapg": 26
+    "yapg": 26,
+    "pbwr": 30,
+    "rbwr": 7,
+    "prwr": 27,
+    "rswr": 29
    },
    "schedule": [
     {
@@ -3313,11 +3444,19 @@
    "ypg": 412.0,
    "papg": 19.25,
    "yapg": 317.75,
+   "pbwr": 53,
+   "rbwr": 76,
+   "prwr": 53,
+   "rswr": 31,
    "rank": {
     "ppg": 6,
     "ypg": 3,
     "papg": 6,
-    "yapg": 12
+    "yapg": 12,
+    "pbwr": 10,
+    "rbwr": 4,
+    "prwr": 12,
+    "rswr": 9
    },
    "schedule": [
     {
@@ -3532,11 +3671,19 @@
    "ypg": 306.75,
    "papg": 26.5,
    "yapg": 333.5,
+   "pbwr": 45,
+   "rbwr": 73,
+   "prwr": 50,
+   "rswr": 34,
    "rank": {
     "ppg": 29,
     "ypg": 21,
     "papg": 24,
-    "yapg": 16
+    "yapg": 16,
+    "pbwr": 27,
+    "rbwr": 17,
+    "prwr": 17,
+    "rswr": 5
    },
    "schedule": [
     {
@@ -3751,11 +3898,19 @@
    "ypg": 417.0,
    "papg": 20.75,
    "yapg": 247.5,
+   "pbwr": 49,
+   "rbwr": 76,
+   "prwr": 54,
+   "rswr": 31,
    "rank": {
     "ppg": 18,
     "ypg": 2,
     "papg": 9,
-    "yapg": 2
+    "yapg": 2,
+    "pbwr": 18,
+    "rbwr": 5,
+    "prwr": 10,
+    "rswr": 8
    },
    "schedule": [
     {
@@ -3970,11 +4125,19 @@
    "ypg": 343.0,
    "papg": 21.0,
    "yapg": 337.25,
+   "pbwr": 59,
+   "rbwr": 73,
+   "prwr": 42,
+   "rswr": 29,
    "rank": {
     "ppg": 8,
     "ypg": 14,
     "papg": 11,
-    "yapg": 19
+    "yapg": 19,
+    "pbwr": 3,
+    "rbwr": 15,
+    "prwr": 28,
+    "rswr": 15
    },
    "schedule": [
     {
@@ -4189,11 +4352,19 @@
    "ypg": 267.5,
    "papg": 25.25,
    "yapg": 335.5,
+   "pbwr": 47,
+   "rbwr": 70,
+   "prwr": 48,
+   "rswr": 28,
    "rank": {
     "ppg": 32,
     "ypg": 30,
     "papg": 21,
-    "yapg": 17
+    "yapg": 17,
+    "pbwr": 22,
+    "rbwr": 29,
+    "prwr": 23,
+    "rswr": 23
    },
    "schedule": [
     {
@@ -4408,11 +4579,19 @@
    "ypg": 262.75,
    "papg": 12.75,
    "yapg": 289.25,
+   "pbwr": 51,
+   "rbwr": 76,
+   "prwr": 64,
+   "rswr": 35,
    "rank": {
     "ppg": 17,
     "ypg": 31,
     "papg": 1,
-    "yapg": 5
+    "yapg": 5,
+    "pbwr": 14,
+    "rbwr": 6,
+    "prwr": 1,
+    "rswr": 2
    },
    "schedule": [
     {
@@ -4627,11 +4806,19 @@
    "ypg": 331.5,
    "papg": 19.25,
    "yapg": 293.75,
+   "pbwr": 51,
+   "rbwr": 71,
+   "prwr": 56,
+   "rswr": 27,
    "rank": {
     "ppg": 30,
     "ypg": 16,
     "papg": 6,
-    "yapg": 6
+    "yapg": 6,
+    "pbwr": 15,
+    "rbwr": 26,
+    "prwr": 5,
+    "rswr": 25
    },
    "schedule": [
     {
@@ -4846,11 +5033,19 @@
    "ypg": 382.67,
    "papg": 27.67,
    "yapg": 340.33,
+   "pbwr": 47,
+   "rbwr": 74,
+   "prwr": 52,
+   "rswr": 29,
    "rank": {
     "ppg": 10,
     "ypg": 9,
     "papg": 28,
-    "yapg": 20
+    "yapg": 20,
+    "pbwr": 23,
+    "rbwr": 10,
+    "prwr": 16,
+    "rswr": 18
    },
    "schedule": [
     {
@@ -5060,11 +5255,19 @@
    "ypg": 283.25,
    "papg": 19.75,
    "yapg": 314.25,
+   "pbwr": 53,
+   "rbwr": 74,
+   "prwr": 46,
+   "rswr": 26,
    "rank": {
     "ppg": 20,
     "ypg": 26,
     "papg": 8,
-    "yapg": 9
+    "yapg": 9,
+    "pbwr": 9,
+    "rbwr": 13,
+    "prwr": 25,
+    "rswr": 27
    },
    "schedule": [
     {
@@ -5279,11 +5482,19 @@
    "ypg": 286.0,
    "papg": 21.0,
    "yapg": 316.75,
+   "pbwr": 51,
+   "rbwr": 73,
+   "prwr": 53,
+   "rswr": 29,
    "rank": {
     "ppg": 23,
     "ypg": 24,
     "papg": 11,
-    "yapg": 11
+    "yapg": 11,
+    "pbwr": 13,
+    "rbwr": 18,
+    "prwr": 13,
+    "rswr": 19
    },
    "schedule": [
     {
@@ -5498,11 +5709,19 @@
    "ypg": 269.75,
    "papg": 23.25,
    "yapg": 344.0,
+   "pbwr": 58,
+   "rbwr": 73,
+   "prwr": 48,
+   "rswr": 34,
    "rank": {
     "ppg": 25,
     "ypg": 29,
     "papg": 16,
-    "yapg": 22
+    "yapg": 22,
+    "pbwr": 4,
+    "rbwr": 20,
+    "prwr": 22,
+    "rswr": 4
    },
    "schedule": [
     {
@@ -5717,11 +5936,19 @@
    "ypg": 317.75,
    "papg": 21.75,
    "yapg": 322.25,
+   "pbwr": 54,
+   "rbwr": 72,
+   "prwr": 39,
+   "rswr": 29,
    "rank": {
     "ppg": 22,
     "ypg": 17,
     "papg": 14,
-    "yapg": 13
+    "yapg": 13,
+    "pbwr": 8,
+    "rbwr": 22,
+    "prwr": 32,
+    "rswr": 17
    },
    "schedule": [
     {
@@ -5936,11 +6163,19 @@
    "ypg": 347.25,
    "papg": 18.25,
    "yapg": 246.75,
+   "pbwr": 42,
+   "rbwr": 74,
+   "prwr": 63,
+   "rswr": 36,
    "rank": {
     "ppg": 11,
     "ypg": 12,
     "papg": 5,
-    "yapg": 1
+    "yapg": 1,
+    "pbwr": 28,
+    "rbwr": 11,
+    "prwr": 2,
+    "rswr": 1
    },
    "schedule": [
     {
@@ -6155,11 +6390,19 @@
    "ypg": 389.0,
    "papg": 16.0,
    "yapg": 308.75,
+   "pbwr": 58,
+   "rbwr": 74,
+   "prwr": 54,
+   "rswr": 25,
    "rank": {
     "ppg": 2,
     "ypg": 7,
     "papg": 3,
-    "yapg": 7
+    "yapg": 7,
+    "pbwr": 5,
+    "rbwr": 12,
+    "prwr": 9,
+    "rswr": 30
    },
    "schedule": [
     {
@@ -6374,11 +6617,19 @@
    "ypg": 278.25,
    "papg": 24.0,
    "yapg": 282.75,
+   "pbwr": 47,
+   "rbwr": 73,
+   "prwr": 52,
+   "rswr": 28,
    "rank": {
     "ppg": 23,
     "ypg": 28,
     "papg": 19,
-    "yapg": 4
+    "yapg": 4,
+    "pbwr": 24,
+    "rbwr": 16,
+    "prwr": 15,
+    "rswr": 22
    },
    "schedule": [
     {
@@ -6593,11 +6844,19 @@
    "ypg": 261.25,
    "papg": 20.75,
    "yapg": 332.5,
+   "pbwr": 46,
+   "rbwr": 74,
+   "prwr": 47,
+   "rswr": 29,
    "rank": {
     "ppg": 31,
     "ypg": 32,
     "papg": 9,
-    "yapg": 15
+    "yapg": 15,
+    "pbwr": 26,
+    "rbwr": 14,
+    "prwr": 24,
+    "rswr": 16
    },
    "schedule": [
     {
@@ -6812,11 +7071,19 @@
    "ypg": 314.75,
    "papg": 30.5,
    "yapg": 336.0,
+   "pbwr": 49,
+   "rbwr": 67,
+   "prwr": 46,
+   "rswr": 34,
    "rank": {
     "ppg": 15,
     "ypg": 19,
     "papg": 31,
-    "yapg": 18
+    "yapg": 18,
+    "pbwr": 20,
+    "rbwr": 32,
+    "prwr": 26,
+    "rswr": 3
    },
    "schedule": [
     {

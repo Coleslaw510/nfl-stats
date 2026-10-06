@@ -18,13 +18,28 @@ Method
   offense numbers; mismatches are reported (stored in data.json too).
 Only games with status FINAL are counted. In-progress / scheduled games are
 shown on schedules without affecting stats.
+
+Win rates (PBWR / RBWR / PRWR / RSWR)
+-------------------------------------
+* ESPN Analytics' team win-rate table (built on NFL Next Gen Stats tracking
+  data) from ESPN's season leaderboard article "<season> NFL pass rush, run
+  stop, blocking win rate rankings", which ESPN updates in place weekly.
+* The article is located via ESPN's public search API (falls back to a known
+  URL), then the "NFL team win rate rankings" HTML table is parsed. Values and
+  ranks are ESPN's published numbers (whole percents; ESPN's own ranks).
+* Best effort: if the fetch/parse/validation fails, the previous win-rate data
+  in data.json is carried forward (flagged stale) and the rest of the refresh
+  continues normally.
 """
 import argparse
 import datetime as dt
+import html as htmllib
 import json
 import os
+import re
 import sys
 import time
+import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
@@ -66,6 +81,150 @@ def rank(values, higher_is_better):
         out[k] = r
         prev, prev_rank = v, r
     return out
+
+
+# ---- ESPN win rates ------------------------------------------------------------
+WR_METRICS = ("pbwr", "rbwr", "prwr", "rswr")
+WR_KNOWN_URLS = {
+    2026: "https://www.espn.com/nfl/story/_/id/49742016/2026-win-rates-team-player-rankings-pass-rush-run-stop-blocking",
+    2025: "https://www.espn.com/nfl/story/_/id/46138675/2025-nfl-win-rates-top-teams-players-rankings-pass-run-block",
+}
+SEARCH = "https://site.web.api.espn.com/apis/search/v2"
+
+
+def get_text(url, retries=3):
+    last = None
+    for i in range(retries):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 nfl-stats-site"})
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return r.read().decode("utf-8", "replace")
+        except Exception as e:
+            last = e
+            time.sleep(1.5 * (i + 1))
+    raise RuntimeError(f"Failed to fetch {url}: {last}")
+
+
+def find_win_rate_article(season):
+    """Return (url, headline) of ESPN's <season> win-rate leaderboard article."""
+    want = f"{season} nfl pass rush, run stop, blocking win rate rankings"
+    try:
+        q = urllib.parse.urlencode({"query": f"{season} NFL pass rush run stop blocking win rate rankings",
+                                    "limit": 10, "type": "article"})
+        sj = get_json(f"{SEARCH}?{q}", retries=2)
+        for r in sj.get("results", []):
+            for c in r.get("contents", []):
+                head = (c.get("displayName") or c.get("headline") or "").strip()
+                link = (c.get("link") or {}).get("web") if isinstance(c.get("link"), dict) else None
+                if link and head.lower() == want:
+                    return link, head
+    except Exception as e:
+        print(f"  win rates: ESPN search failed ({e}); trying known URL", file=sys.stderr)
+    if season in WR_KNOWN_URLS:
+        return WR_KNOWN_URLS[season], None
+    raise RuntimeError(f"could not locate ESPN {season} win-rate article")
+
+
+def _cells(row_html):
+    out = []
+    for m in re.finditer(r"<t([hd])\b[^>]*>(.*?)</t\1>", row_html, re.S | re.I):
+        inner = m.group(2)
+        href = re.search(r'href="([^"]+)"', inner)
+        out.append((htmllib.unescape(re.sub(r"<[^>]+>", "", inner)).strip(), href.group(1) if href else None))
+    return out
+
+
+def fetch_win_rates(season, teams):
+    """Scrape ESPN's team win-rate table. Returns (meta, {team_id: {metric: pct, 'rank': {...}}})."""
+    url, headline = find_win_rate_article(season)
+    page = get_text(url)
+    if headline is None:
+        m = re.search(r"<h1[^>]*>(.*?)</h1>", page, re.S)
+        headline = htmllib.unescape(re.sub(r"<[^>]+>", "", m.group(1))).strip() if m else ""
+    if str(season) not in headline:
+        raise RuntimeError(f"article headline {headline!r} is not for season {season}")
+    upd = re.search(r"Last updated:\s*([^<]+)", page)
+    updated_text = htmllib.unescape(upd.group(1)).strip() if upd else None
+    wk = re.search(r"Through Week (\d+)", updated_text or "", re.I)
+    mod = re.search(r'"dateModified"\s*:\s*"([^"]+)"', page)
+
+    table = None
+    for t in re.findall(r"<table\b.*?</table>", page, re.S | re.I):
+        rows = re.findall(r"<tr\b.*?</tr>", t, re.S | re.I)
+        if not rows:
+            continue
+        head = [c[0].upper() for c in _cells(rows[0])]
+        if head and head[0] == "TEAM" and all(k.upper() in head for k in WR_METRICS):
+            table = (head, rows[1:])
+            break
+    if not table:
+        raise RuntimeError("team win-rate table not found on ESPN page")
+    head, rows = table
+    col = {k: head.index(k.upper()) for k in WR_METRICS}
+    by_name = {t["name"].lower(): tid for tid, t in teams.items()}
+    by_abbr = {t["abbr"].lower(): tid for tid, t in teams.items()}
+    alias = {"wsh": "wsh", "was": "wsh", "az": "ari", "jac": "jax", "la": "lar", "lvr": "lv"}
+    out = {}
+    for r in rows:
+        cells = _cells(r)
+        if len(cells) < len(head):
+            continue
+        name, href = cells[0]
+        tid = by_name.get(name.lower())
+        if tid is None and href:
+            m = re.search(r"/name/([a-z]+)/", href)
+            if m:
+                tid = by_abbr.get(alias.get(m.group(1), m.group(1)))
+        if tid is None:
+            raise RuntimeError(f"unrecognized team in win-rate table: {name!r}")
+        rec = {"rank": {}}
+        for k, i in col.items():
+            m = re.match(r"\s*(\d+(?:\.\d+)?)\s*%\s*(?:\((\d+)\))?", cells[i][0])
+            if not m:
+                raise RuntimeError(f"bad {k} cell for {name}: {cells[i][0]!r}")
+            v = float(m.group(1))
+            if not 0 <= v <= 100:
+                raise RuntimeError(f"out-of-range {k} for {name}: {v}")
+            rec[k] = int(v) if v.is_integer() else v
+            rec["rank"][k] = int(m.group(2)) if m.group(2) else None
+        out[tid] = rec
+    if len(out) != len(teams):
+        raise RuntimeError(f"win-rate table has {len(out)} teams, expected {len(teams)}")
+    for k in WR_METRICS:  # fill any missing published ranks (ESPN ranks higher = better)
+        if any(rec["rank"][k] is None for rec in out.values()):
+            rk = rank({tid: rec[k] for tid, rec in out.items()}, True)
+            for tid, rec in out.items():
+                rec["rank"][k] = rk[tid]
+    meta = {
+        "status": "ok",
+        "source": "ESPN Analytics win rates (powered by NFL Next Gen Stats player tracking)",
+        "url": url,
+        "headline": headline,
+        "updated_text": updated_text,
+        "through_week": int(wk.group(1)) if wk else None,
+        "page_modified_utc": mod.group(1) if mod else None,
+        "fetched_utc": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "error": None,
+    }
+    return meta, out
+
+
+def previous_win_rates(path, season):
+    """Win-rate data from the existing data.json (same season) to carry forward on failure."""
+    try:
+        with open(path) as f:
+            old = json.load(f)
+    except Exception:
+        return None, {}
+    meta = old.get("win_rates")
+    if not meta or old.get("season") != season or meta.get("status") == "unavailable":
+        return None, {}
+    vals = {}
+    for t in old.get("teams", []):
+        if all(t.get(k) is not None for k in WR_METRICS):
+            vals[t["id"]] = {**{k: t[k] for k in WR_METRICS},
+                             "rank": {k: (t.get("rank") or {}).get(k) for k in WR_METRICS}}
+    return meta, vals
 
 
 def main():
@@ -219,6 +378,21 @@ def main():
     for m in mismatches:
         print("  -", m)
 
+    # ---- win rates (best effort; never fails the refresh) ---------------------
+    try:
+        wr_meta, wr_vals = fetch_win_rates(season, teams)
+        print(f"Win rates: {wr_meta['updated_text']} ({len(wr_vals)} teams) from {wr_meta['url']}")
+    except Exception as e:
+        print(f"WARNING: win-rate fetch failed: {e}", file=sys.stderr)
+        wr_meta, wr_vals = previous_win_rates(args.out, season)
+        if wr_meta:
+            wr_meta = {**wr_meta, "status": "stale", "error": f"latest fetch failed: {e}",
+                       "last_attempt_utc": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+            print("  carried forward previous win-rate data:", wr_meta.get("updated_text"), file=sys.stderr)
+        else:
+            wr_meta = {"status": "unavailable", "error": str(e), "source": "ESPN Analytics win rates"}
+            wr_vals = {}
+
     # ---- schedules for output --------------------------------------------------
     out_teams = []
     for tid, t in teams.items():
@@ -247,7 +421,11 @@ def main():
             games.append({"week": w, "bye": True})
         if bye_weeks:
             games.sort(key=lambda r: r["week"] or 0)
-        out_teams.append({**t, **stats[tid], "rank": {k: ranks[k].get(tid) for k in ranks}, "schedule": games})
+        wr = wr_vals.get(tid) or {}
+        team_rank = {k: ranks[k].get(tid) for k in ranks}
+        team_rank.update({k: (wr.get("rank") or {}).get(k) for k in WR_METRICS})
+        out_teams.append({**t, **stats[tid], **{k: wr.get(k) for k in WR_METRICS},
+                          "rank": team_rank, "schedule": games})
 
     finals = [events[e] for e in final_ids]
     last_week = max((g["week"] for g in finals), default=None)
@@ -268,6 +446,7 @@ def main():
         ],
         "data_gaps": gaps,
         "crosscheck": {"teams_compared": checked, "notes": mismatches},
+        "win_rates": wr_meta,
         "teams": sorted(out_teams, key=lambda t: t["abbr"]),
     }
     tmp = args.out + ".tmp"
@@ -278,6 +457,12 @@ def main():
     for k, label in (("ppg", "PPG"), ("ypg", "YPG"), ("papg", "Pts allowed/G"), ("yapg", "Yds allowed/G")):
         top = sorted(out_teams, key=lambda t: t["rank"][k] or 99)[:3]
         print(f"  Top 3 {label}: " + ", ".join(f"{t['abbr']} {t[k]}" for t in top))
+    for k in WR_METRICS:
+        have = [t for t in out_teams if t["rank"].get(k) is not None]
+        if have:
+            srt = sorted(have, key=lambda t: t["rank"][k])
+            print(f"  {k.upper()} ({wr_meta.get('status')}): top " + ", ".join(f"{t['abbr']} {t[k]}%" for t in srt[:3])
+                  + " | bottom " + ", ".join(f"{t['abbr']} {t[k]}%" for t in srt[-3:]))
 
 
 if __name__ == "__main__":
